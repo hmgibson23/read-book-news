@@ -1,4 +1,5 @@
 (ns read-book-news.util
+  (:import (java.io ByteArrayInputStream))
   (:use [clojure.data.zip.xml :only (attr text xml->)])
   (:require [clojure.xml :as xml]
             [clojure.zip :as zip]
@@ -18,14 +19,8 @@
   "Read a URL and parse its contents with zip"
   (xml/parse content))
 
-
-(defn get-struct-map [xml]
-  (if-not (empty? xml)
-    (let [stream (ByteArrayInputStream. (.getBytes (.trim xml)))]
-      (xml/parse stream))))
- 
 (defn get-value [xml & tags]
-  (apply zf/xml1-> (zip/xml-zip (get-struct-map xml)) (conj (vec tags) zf/text)))
+  (apply zf/xml1-> (zip/xml-zip (parse-xml xml)) (conj (vec tags) zf/text)))
 
 
 
