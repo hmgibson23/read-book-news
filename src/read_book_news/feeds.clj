@@ -12,5 +12,11 @@
 
 (defn new-yorker []
   (for [x  (:entries 
-            (parse/parse-feed "http://www.newyorker.com/online/blogs/books/rss.xml"))] 
+            (parse/parse-feed (:new-yorker urls)))] 
     (println (:title x))))
+
+(defn guardian []
+  (for [x (:entries
+           (parse/parse-feed (:guardian urls)))]
+    (println (:title x))))
+

@@ -1,5 +1,19 @@
 (ns read-book-news.core
+  (require [read-book-news.feeds :as feeds])
   (:gen-class))
+
+(def look-up { 
+              :a feeds/new-yorker
+              :b feeds/guardian
+              })
+
+
+(defn get-selection []
+  (println "Read some books news: 
+            Choices:
+            A) The New Yorker
+            B) The Guardian") 
+  (read-line))
 
 
 (defn -main
