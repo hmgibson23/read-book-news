@@ -11,11 +11,13 @@
 
 
 (defn new-yorker []
+  (println "The New Yorker")
   (for [x  (:entries 
             (parse/parse-feed (:new-yorker urls)))] 
     (println (:title x))))
 
 (defn guardian []
+  (println "The Guardian Books")
   (for [x (:entries
            (parse/parse-feed (:guardian urls)))]
     (println (:title x))))

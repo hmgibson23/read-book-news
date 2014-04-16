@@ -3,17 +3,19 @@
   (:gen-class))
 
 (def look-up { 
-              :a feeds/new-yorker
-              :b feeds/guardian
+              :a (feeds/new-yorker)
+              :b (feeds/guardian)
               })
 
+(defn parse-selection [x]
+  (look-up (keyword x)))
 
 (defn get-selection []
   (println "Read some books news: 
             Choices:
             A) The New Yorker
             B) The Guardian") 
-  (read-line))
+  (parse-selection (read-line)))
 
 
 (defn -main
