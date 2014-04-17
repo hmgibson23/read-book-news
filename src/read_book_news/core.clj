@@ -23,4 +23,7 @@
   [& args]
   ;; work around dangerous default behaviour in Clojure
   (alter-var-root #'*read-eval* (constantly false))
-  (println "Hello, World!"))
+  
+  (println "Welcome! Get some book news!")
+  (get-selection))
+
