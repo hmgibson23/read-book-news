@@ -6,7 +6,10 @@
             [clojure.contrib.zip-filter.xml :as zf]))
 
 (defn read-url [url]
-  (slurp url))
+  (with-open [stream (.openStream (java.net.URL. url))]
+    (let  [buf (java.io.BufferedReader. 
+                (java.io.InputStreamReader. stream))]
+      (apply str (line-seq buf)))))
 
 
 (defn zipped [xml] 
