@@ -21,4 +21,3 @@
   (for [x (:entries
            (parse/parse-feed (:guardian urls)))]
     (println (:title x))))
-

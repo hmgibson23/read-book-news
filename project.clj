@@ -6,5 +6,6 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/data.zip "0.1.1"]
                  [clj-rome "0.4.0"]
+                 [enlive "1.1.5"]
                  [org.clojure/clojure-contrib "1.2.0"]]
   :main read-book-news.core)
