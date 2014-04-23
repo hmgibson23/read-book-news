@@ -1,4 +1,4 @@
-(ns read-book-news.stocks
+(ns read-book-news.exchanges.stocks
   (:require [net.cgrand.enlive-html :as html]
             [clojure.string :as string]))
 
