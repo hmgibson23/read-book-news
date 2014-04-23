@@ -1,13 +1,12 @@
 (ns read-book-news.exchanges.stocks
+  (:use [read-book-news.util :only (fetch-url)])
   (:require [net.cgrand.enlive-html :as html]
+            [read-book-news.scrapers.goog :as goog]
+            [clojure.core.async :refer [>! <!! <! thread chan go take!]]
             [clojure.string :as string]))
 
-(defn fetch-url [url]
-  (html/html-resource (java.net.URL. url)))
-
 (def ^:dynamic *ftse350* "http://www.hl.co.uk/shares/stock-market-summary/ftse-350?page=")
-
-                                        ; selectors - used to get the relevant info from above urls
+; selectors - used to get the relevant info from above urls
 (def ^:dynamic *odd-selector* #{[:tr.table-odd html/first-child]})
 (def ^:dynamic *alt-selector* #{[:tr.table-alt html/first-child]})
 
@@ -18,7 +17,7 @@
           :when (not= (:tag item) :a)]
       (:content item))))
 
-                                        ; with these we can get all their prices
+; with these we can get all their prices
 (defn ftse-350 []
   "Get the symbols of every stock in the FTSE 350"
   (flatten (for [x [1 2 3 4]]
@@ -26,3 +25,22 @@
                (let [res-one (future (parse-results-350 raw-html *odd-selector*))
                      res-two (future (parse-results-350 raw-html *alt-selector*))]
                  (concat @res-one @res-two))))))
+
+
+
+(def channel (chan))
+
+(defn async-fetch [seq]
+  (doseq [symb seq]
+    (go (>! channel (goog/package-quote symb)))))
+
+(defn async-read [sequence]
+  (<!!
+   (go 
+     (doseq [_ sequence]
+       (println (<! channel))))))
+
+(defn ftse-350-recommend []
+  (let [symbols (ftse-350)]
+    (async-fetch symbols)
+    (async-read symbols)))

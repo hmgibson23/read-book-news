@@ -1,8 +1,7 @@
 (ns read-book-news.scrapers.goog
-  (:use [read-book-news.stocks :only (fetch-url)])
+  (:use [read-book-news.util :only (fetch-url)])
   (:require [net.cgrand.enlive-html :as html]
             [clojure.string :as string]))
-
 
 
 ; This file explicitly contains functionality to 
@@ -37,7 +36,10 @@
 
 ; helps to get nested meta info
 (defn get-meta [sequence]
-  (string/trim-newline (nth (:content (nth (:content sequence) 3)) 0)))
+  (if sequence
+    (string/trim-newline (nth (:content (nth (:content sequence) 3)) 0))
+    ""))
+
 
 ; Get the metascope value - these are generic
 (defn get-meta-val [symbol selector]

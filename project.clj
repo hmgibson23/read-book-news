@@ -7,5 +7,6 @@
                  [org.clojure/data.zip "0.1.1"]
                  [clj-rome "0.4.0"]
                  [enlive "1.1.5"]
+                 [org.clojure/core.async "0.1.278.0-76b25b-alpha"]
                  [org.clojure/clojure-contrib "1.2.0"]]
   :main read-book-news.core)

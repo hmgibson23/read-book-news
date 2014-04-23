@@ -3,7 +3,11 @@
   (:use [clojure.data.zip.xml :only (attr text xml->)])
   (:require [clojure.xml :as xml]
             [clojure.zip :as zip]
+            [net.cgrand.enlive-html :as html]
             [clojure.contrib.zip-filter.xml :as zf]))
+
+(defn fetch-url [url]
+  (html/html-resource (java.net.URL. url)))
 
 (defn read-url [url]
   (with-open [stream (.openStream (java.net.URL. url))]
