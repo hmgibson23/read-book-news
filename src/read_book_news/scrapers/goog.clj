@@ -1,7 +1,13 @@
-(ns read-book-news.goog
+(ns read-book-news.scrapers.goog
+  (:use [read-book-news.stocks :only (fetch-url)])
   (:require [net.cgrand.enlive-html :as html]
             [clojure.string :as string]))
 
+
+
+; This file explicityl contains functionality to 
+; to scrape Google Finance for stock related 
+; information. Others to come
 
 (def ^:dynamic *goog* "http://google.com/finance?q=")
 (def ^:dynamic *sharebox-selector* #{[:div#sharebox-data]})
@@ -36,3 +42,5 @@
 
 
 (defn get-quotetime [symbol])
+(defn get-pe [symbol])
+(defn get-last-div-yield [symbol])
