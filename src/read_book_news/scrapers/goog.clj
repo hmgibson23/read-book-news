@@ -53,5 +53,12 @@
 
 ; create a map, containing all the relevant information
 ; about the passed symbol
-(defn package-quote [symbol])
+(defn package-quote [symbol]
+  {:symbol 'symbol
+   :name (get-name symbol)
+   :price (get-price symbol)
+   :eps (get-eps symbol)
+   :pe (get-pe symbol)
+   :quote-time (get-quotetime symbol)})
+
 
