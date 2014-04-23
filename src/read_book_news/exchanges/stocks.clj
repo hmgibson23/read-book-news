@@ -28,19 +28,23 @@
 
 
 
+
+; Define a shared channel
 (def channel (chan))
 
+; Read the quotes asynchronously
 (defn async-fetch [seq]
   (doseq [symb seq]
     (go (>! channel (goog/package-quote symb)))))
 
-(defn async-read [sequence]
+; Read the quotes as they come in
+(defn async-read [terminus]
   (<!!
    (go 
-     (doseq [_ sequence]
+     (doseq [_ (range terminus)]
        (println (<! channel))))))
 
 (defn ftse-350-recommend []
   (let [symbols (ftse-350)]
-    (async-fetch symbols)
-    (async-read symbols)))
+    (async-fetch symbols))
+  (async-read 350))
