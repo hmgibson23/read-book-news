@@ -9,11 +9,39 @@
 ; Information for the FTSE exchanges. We get market data using
 ; one of the web scrapers
 
-
-
+; Exchanges
 (def *ftse350* 
   {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-350?page="
    :page-limit 4})
+
+(def *ftse100*
+  {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-100?"
+   :page-limit 1})
+
+(def *ftse250*
+  {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-250?page="
+   :page-limit 3})
+
+(def *ftseAllShare*
+  {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-all-share?page="
+   :page-limit 7})
+
+(def *ftseSmallCap*
+  {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-small-cap?page="
+   :page-limit 3})
+
+(def *ftseAim100*
+  {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-aim-100?"
+   :page-limit 1})
+
+
+(def exchanges 
+  {:100 *ftse100*
+   :250 *ftse250*
+   :350 *ftse350*
+   :small *ftseSmallCap*
+   :aim100 *ftseAim100*
+   :all *ftseAllShare*})
 
 (def ^:dynamic *odd-selector* #{[:tr.table-odd html/first-child]})
 (def ^:dynamic *alt-selector* #{[:tr.table-alt html/first-child]})
@@ -32,6 +60,8 @@
 (def results (atom []))
 (def futures (atom []))
 
+; Using the bloomger scraper -> fetch quotes for the
+; parsed results
 (defn get-quotes [sequence]
   "In a separate thread, get the quotes for passed sequence"
   (future ((fn [x] 
@@ -39,6 +69,7 @@
                (swap! results conj 
                       (bloomberg/package-quote (first symb))))) 
            sequence)))
+
 
 ; with these we can get all their prices
 ; all the futures are put into a pool
@@ -54,7 +85,12 @@
 
 ; We delay and wait for all the futures
 ; before - then we apply the passed predicate
+; Exchange is a string which will match the exchanges
+; table.
+; Predicate is a function to filter the results on
+; upper is the upper bound
+; lower is the lower bound
 (defn ftse [exchange predicate upper lower]
-  (ftse-fetch exchange)
+  (ftse-fetch ((keyword exchange) exchanges))
   (doseq [fut @futures] @fut)
   (predicate upper lower @results))

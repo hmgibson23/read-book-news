@@ -19,8 +19,9 @@
 (defn numeric [val]
   "Transforms a string into it's numeric equivalent"
   (cond 
-   (> (.indexOf val "-") -1) ((fn [] (println "Discarding " val) 0))
+   (> (.indexOf val "-") -1) 0
    (empty? val) 0
+   (> (.indexOf val "%") -1) (subs val 0 (.indexOf val "%"))
    :else (Float/parseFloat val)))
 
 (defn get-nth [html index]
@@ -43,10 +44,10 @@
        :est_pe (numeric (get-nth stat 1))
        :eps (numeric (get-nth stat 3))
        :est_eps (numeric (get-nth stat 4))
-       :est_peg (get-nth stat 5)
+       :est_peg (numeric (get-nth stat 5))
        :price_book (numeric (get-nth stat 9))
-       :div_gross_yield (get-nth stat 11)
-       :div_growth (get-nth stat 14)
+       :div_gross_yield (numeric (get-nth stat 11))
+       :div_growth (numeric (get-nth stat 14))
        })))
 
 
