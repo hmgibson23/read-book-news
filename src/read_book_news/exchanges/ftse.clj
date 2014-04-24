@@ -9,13 +9,17 @@
 ; Information for the FTSE exchanges. We get market data using
 ; one of the web scrapers
 
-(def ^:dynamic *ftse350* "http://www.hl.co.uk/shares/stock-market-summary/ftse-350?page=")
-; selectors - used to get the relevant info from above urls
+
+
+(def *ftse350* 
+  {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-350?page="
+   :page-limit 4})
+
 (def ^:dynamic *odd-selector* #{[:tr.table-odd html/first-child]})
 (def ^:dynamic *alt-selector* #{[:tr.table-alt html/first-child]})
 
 (defn parse-results [res selector]
-  "Specifically for our FTSE 350 analysis"
+  "Helps get symbols from the HL website"
   (let [parsed (html/select res selector)]
     (for [item parsed
           :when (not= (:tag item) :a)]
@@ -23,6 +27,8 @@
 
 
 
+
+; Shared atoms for pushing results
 (def results (atom []))
 (def futures (atom []))
 
@@ -37,10 +43,10 @@
 ; with these we can get all their prices
 ; all the futures are put into a pool
 ; which is then waited on in the low-pe function
-(defn ftse-350-fetch []
+(defn ftse-fetch [exchange]
   "Get the symbols of every stock in the FTSE 350"
-  (flatten (for [x (range 4)]
-             (let [raw-html (fetch-url (str *ftse350* x))]
+  (flatten (for [x (range (:page-limit exchange))]
+             (let [raw-html (fetch-url (str (:url exchange) x))]
                (let [res-one (future (parse-results raw-html *odd-selector*))
                      res-two (future (parse-results raw-html *alt-selector*))]
                  (swap! futures conj (get-quotes (concat @res-one @res-two))))))))
@@ -48,7 +54,7 @@
 
 ; We delay and wait for all the futures
 ; before - then we apply the passed predicate
-(defn ftse-350 [predicate upper lower]
-  (ftse-350-fetch)
+(defn ftse [exchange predicate upper lower]
+  (ftse-fetch exchange)
   (doseq [fut @futures] @fut)
   (predicate upper lower @results))
