@@ -20,7 +20,7 @@
 (def filter-table
   {:a filters/pe
    :b filters/est-pe
-   :c filters/peg
+   :c filters/est-peg
    :d filters/eps
    :e filters/est-eps
    :f filters/price-book

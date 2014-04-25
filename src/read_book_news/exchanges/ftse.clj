@@ -64,6 +64,7 @@
                       (bloomberg/package-quote (first symb))))) 
            sequence)))
 
+
 ; An alternative way of processing
 ; Spawn a thread for each symbol and crunch through them
 (defn fetch-all [sequence results]
@@ -73,7 +74,8 @@
               (bloomberg/package-quote (first symb))))
           sequence)))
 
-
+; Use a future to collect all of the other futures 
+; that have run for the quotes
 (defn get-quotes-all [sequence results]
   (future 
     (let [x (fetch-all sequence results)]

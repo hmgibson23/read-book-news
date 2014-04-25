@@ -14,8 +14,7 @@
 
 
 ; Our filters 
-(create-filter "pe")     
-(create-filter "peg")    
+(create-filter "pe")         
 (create-filter "est-pe") 
 (create-filter "eps")
 (create-filter "est-eps")
