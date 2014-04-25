@@ -4,7 +4,7 @@
 
 ; Functions to help with command line parsing etc.
 (defn show-names [collection]
-  (for [item collection]
+  (doseq [item collection]
     (println (:symbol item) "\t" (:name item))))
 
 
