@@ -15,7 +15,7 @@
   (let [fetch (str *quote-url* symbol *exchange*)]
     (fetch-url fetch)))
 
-
+ 
 (defn numeric [val]
   "Transforms a string into it's numeric equivalent"
   (cond 

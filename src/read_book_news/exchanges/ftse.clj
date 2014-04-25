@@ -53,13 +53,7 @@
           :when (not= (:tag item) :a)]
       (:content item))))
 
-
-
-
-; Shared atoms for pushing results
-; These need to be moved into functions
-
-; Using the bloomger scraper -> fetch quotes for the
+; Using the bloomberg scraper -> fetch quotes for the
 ; parsed results
 (defn get-quotes [sequence results]
   "In a separate thread, get the quotes for passed sequence"
