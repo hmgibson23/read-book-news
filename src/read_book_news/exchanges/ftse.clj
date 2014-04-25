@@ -10,27 +10,27 @@
 ; one of the web scrapers
 
 ; Exchanges
-(def *ftse350* 
+(def ^:dynamic *ftse350* 
   {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-350?page="
    :page-limit 4})
 
-(def *ftse100*
+(def ^:dynamic *ftse100*
   {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-100?"
    :page-limit 1})
 
-(def *ftse250*
+(def ^:dynamic *ftse250*
   {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-250?page="
    :page-limit 3})
 
-(def *ftseAllShare*
+(def ^:dynamic *ftseAllShare*
   {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-all-share?page="
    :page-limit 7})
 
-(def *ftseSmallCap*
+(def ^:dynamic *ftseSmallCap*
   {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-small-cap?page="
    :page-limit 3})
 
-(def *ftseAim100*
+(def ^:dynamic *ftseAim100*
   {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-aim-100?"
    :page-limit 1})
 
@@ -55,6 +55,7 @@
 
 ; Using the bloomberg scraper -> fetch quotes for the
 ; parsed results
+; DEPRECAED IN FAVOUR OF A MUCH FASTER VERSION BELOW
 (defn get-quotes [sequence results]
   "In a separate thread, get the quotes for passed sequence"
   (future ((fn [x] 
@@ -63,17 +64,33 @@
                       (bloomberg/package-quote (first symb))))) 
            sequence)))
 
+; An alternative way of processing
+; Spawn a thread for each symbol and crunch through them
+(defn fetch-all [sequence results]
+  (doall (map
+          (fn [symb]
+            (future 
+              (bloomberg/package-quote (first symb))))
+          sequence)))
+
+
+(defn get-quotes-all [sequence results]
+  (future 
+    (let [x (fetch-all sequence results)]
+      (doseq [y x]
+        (swap! results conj @y)))))
+           
 
 ; with these we can get all their prices
 ; all the futures are put into a pool
 ; which is then waited on in the low-pe function
 (defn ftse-fetch [exchange results futures]
-  "Get the symbols of every stock in the FTSE 350"
+  "Get the symbols of every stock in the passed exchange"
   (flatten (for [x (range (:page-limit exchange))]
              (let [raw-html (fetch-url (str (:url exchange) x))]
                (let [res-one (future (parse-results raw-html *odd-selector*))
                      res-two (future (parse-results raw-html *alt-selector*))]
-                 (swap! futures conj (get-quotes (concat @res-one @res-two) results)))))))
+                 (swap! futures conj (get-quotes-all (concat @res-one @res-two) results)))))))
 
 
 ; We delay and wait for all the futures
