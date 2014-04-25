@@ -1,5 +1,5 @@
 (ns read-book-news.scrapers.bloomberg
-  (:use [read-book-news.util :only (fetch-url)])
+  (:use [read-book-news.util.util :only (fetch-url)])
   (:require [net.cgrand.enlive-html :as html]
             [clojure.string :as string]))
 
@@ -41,13 +41,13 @@
       {:symbol symbol
        :name ((fn [x] (first (:content x))) name)
        :pe (numeric (get-nth stat 0))
-       :est_pe (numeric (get-nth stat 1))
+       :est-pe (numeric (get-nth stat 1))
        :eps (numeric (get-nth stat 3))
-       :est_eps (numeric (get-nth stat 4))
-       :est_peg (numeric (get-nth stat 5))
-       :price_book (numeric (get-nth stat 9))
-       :div_gross_yield (numeric (get-nth stat 11))
-       :div_growth (numeric (get-nth stat 14))
+       :est-eps (numeric (get-nth stat 4))
+       :est-peg (numeric (get-nth stat 5))
+       :price-book (numeric (get-nth stat 9))
+       :div-gross-yield (numeric (get-nth stat 11))
+       :div-growth (numeric (get-nth stat 14))
        })))
 
 

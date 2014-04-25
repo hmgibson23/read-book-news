@@ -1,4 +1,4 @@
-(ns read-book-news.util
+(ns read-book-news.util.util
   (:import (java.io ByteArrayInputStream))
   (:use [clojure.data.zip.xml :only (attr text xml->)])
   (:require [clojure.xml :as xml]

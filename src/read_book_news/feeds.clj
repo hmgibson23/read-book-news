@@ -1,6 +1,6 @@
 (ns read-book-news.feeds
   (:use [clojure.data.zip.xml :only (attr text xml->)])
-  (require [read-book-news.util :as util]
+  (require [read-book-news.util.util :as util]
            [read-book-news.parse :as parse]
            ))
 

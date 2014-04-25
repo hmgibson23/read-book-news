@@ -1,5 +1,5 @@
 (ns read-book-news.scrapers.goog
-  (:use [read-book-news.util :only (fetch-url)])
+  (:use [read-book-news.util.util :only (fetch-url)])
   (:require [net.cgrand.enlive-html :as html]
             [clojure.string :as string]))
 

@@ -1,9 +1,9 @@
 (ns read-book-news.exchanges.ftse
-  (:use [read-book-news.util :only (fetch-url)])
+  (:use [read-book-news.util.util :only (fetch-url)])
   (:require [net.cgrand.enlive-html :as html]
             [read-book-news.scrapers.bloomberg :as bloomberg]
             [clojure.string :as string]
-            [read-book-news.filters :as filters]))
+            [read-book-news.util.filters :as filters]))
 
 
 ; Information for the FTSE exchanges. We get market data using
@@ -34,7 +34,7 @@
   {:url "http://www.hl.co.uk/shares/stock-market-summary/ftse-aim-100?"
    :page-limit 1})
 
-
+ 
 (def exchanges 
   {:100 *ftse100*
    :250 *ftse250*
@@ -57,12 +57,11 @@
 
 
 ; Shared atoms for pushing results
-(def results (atom []))
-(def futures (atom []))
+; These need to be moved into functions
 
 ; Using the bloomger scraper -> fetch quotes for the
 ; parsed results
-(defn get-quotes [sequence]
+(defn get-quotes [sequence results]
   "In a separate thread, get the quotes for passed sequence"
   (future ((fn [x] 
              (doseq [symb x]
@@ -74,13 +73,13 @@
 ; with these we can get all their prices
 ; all the futures are put into a pool
 ; which is then waited on in the low-pe function
-(defn ftse-fetch [exchange]
+(defn ftse-fetch [exchange results futures]
   "Get the symbols of every stock in the FTSE 350"
   (flatten (for [x (range (:page-limit exchange))]
              (let [raw-html (fetch-url (str (:url exchange) x))]
                (let [res-one (future (parse-results raw-html *odd-selector*))
                      res-two (future (parse-results raw-html *alt-selector*))]
-                 (swap! futures conj (get-quotes (concat @res-one @res-two))))))))
+                 (swap! futures conj (get-quotes (concat @res-one @res-two) results)))))))
 
 
 ; We delay and wait for all the futures
@@ -91,6 +90,8 @@
 ; upper is the upper bound
 ; lower is the lower bound
 (defn ftse [exchange predicate upper lower]
-  (ftse-fetch ((keyword exchange) exchanges))
-  (doseq [fut @futures] @fut)
-  (predicate upper lower @results))
+  (let [results (atom [])
+        futures (atom [])]
+    (ftse-fetch ((keyword exchange) exchanges) results futures)
+    (doseq [fut @futures] @fut)
+    (predicate upper lower @results)))
