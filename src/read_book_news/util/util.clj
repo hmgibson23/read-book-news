@@ -29,5 +29,25 @@
 (defn get-value [xml & tags]
   (apply zf/xml1-> (zip/xml-zip (parse-xml xml)) (conj (vec tags) zf/text)))
 
+(defn fetch-parsed [quote-url symbol exchange]
+  "Fetches and parse HTML - use only once to minimise HTTP requests"
+  (let [fetch (str quote-url symbol exchange)]
+    (fetch-url fetch)))
 
+ 
+(defn numeric [val]
+  "Transforms a string into it's numeric equivalent"
+  (cond 
+   (> (.indexOf val "-") -1) 0
+   (empty? val) 0
+   (> (.indexOf val "%") -1) (subs val 0 (.indexOf val "%"))
+   :else (Float/parseFloat val)))
 
+(defn is-numeric? [s]
+  "Check if string/sequence of chars is numeric"
+  (if-let [s (seq s)]
+    (let [s (if (= (first s) \-) (next s) s)
+          s (drop-while #(Character/isDigit %) s)
+          s (if (= (first s) \.) (next s) s)
+          s (drop-while #(Character/isDigit %) s)]
+      (empty? s))))

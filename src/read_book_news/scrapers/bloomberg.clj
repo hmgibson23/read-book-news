@@ -1,5 +1,5 @@
 (ns read-book-news.scrapers.bloomberg
-  (:use [read-book-news.util.util :only (fetch-url)])
+  (:use [read-book-news.util.util :only (fetch-url numeric fetch-parsed)])
   (:require [net.cgrand.enlive-html :as html]
             [clojure.string :as string]))
 
@@ -9,20 +9,6 @@
 (def ^:dynamic *key-stat-data* #{[:table.key_stat_data]})
 (def ^:dynamic *tr-selector* [[:tr (html/has [(html/attr= :class "company_stat")])]])
 (def ^:dynamic *name-selector* [[:h2 (html/attr= :itemprop "name")]])
-
-(defn fetch-parsed [symbol]
-  "Fetches and parse HTML - used only once to minimise HTTP requests"
-  (let [fetch (str *quote-url* symbol *exchange*)]
-    (fetch-url fetch)))
-
- 
-(defn numeric [val]
-  "Transforms a string into it's numeric equivalent"
-  (cond 
-   (> (.indexOf val "-") -1) 0
-   (empty? val) 0
-   (> (.indexOf val "%") -1) (subs val 0 (.indexOf val "%"))
-   :else (Float/parseFloat val)))
 
 (defn get-nth [html index]
   "Get the nth item in parse html"
@@ -35,7 +21,7 @@
 ; Multiple lets because we only want to fetch the 
 ; value once to avoid spamming Bloomberg's servers
 (defn package-quote [symbol]
-  (let [parsed (fetch-parsed symbol)]
+  (let [parsed (fetch-parsed *quote-url* symbol *exchange*)]
     (let [stat (html/select parsed *tr-selector*)
           name (first (html/select parsed *name-selector*))]
       {:symbol symbol
